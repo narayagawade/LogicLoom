@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LogicLoom - Sign Up</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family:"Poppins",sans-serif;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:linear-gradient(135deg,#ECFAE5 0%,#DDF6D2 35%,#F7F4EA 70%,#B0DB9C 100%);
+      background-size:400% 400%;
+      animation:bgShift 12s ease infinite;
+      padding:24px;
+    }
+    @keyframes bgShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+    .split-container{
+      width:100%;
+      max-width:980px;
+      background:#fff;
+      border-radius:18px;
+      box-shadow:0 10px 30px rgba(15,20,30,0.08);
+      overflow:hidden;
+      display:flex;
+      align-items:stretch;
+    }
+
+    .left-panel{
+      flex:1;
+      min-width:260px;
+      background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.02));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+    }
+    .left-panel img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .left-pattern{
+      position:absolute;
+      inset:0;
+      background-image:radial-gradient(rgba(255,255,255,0.03) 1px,transparent 1px);
+      background-size:18px 18px;
+      pointer-events:none;
+    }
+
+    .right-panel{
+      flex:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:30px;
+      min-width:320px;
+    }
+
+    .signup-card{
+      width:100%;
+      max-width:380px;
+      background:#ffffff;
+      border-radius:12px;
+      padding:34px;
+      box-shadow:0 8px 24px rgba(12,18,25,0.06);
+      transform:translateY(0);
+      transition:transform .25s ease;
+    }
+    .signup-card:hover{transform:translateY(-4px)}
+
+    .logo{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      margin-bottom:20px;
+      font-weight:700;
+      font-size:22px;
+      color:#2f7f3a;
+    }
+    .logo svg{width:28px;height:28px;}
+
+    h2{text-align:center;margin-bottom:20px;color:#24323a;font-size:20px;font-weight:600;}
+
+    .input-group{position:relative;margin-bottom:16px;}
+    .input{
+      width:100%;
+      padding:12px 44px 12px 12px;
+      border-radius:10px;
+      border:1px solid #e6e6e6;
+      outline:none;
+      font-size:15px;
+      transition:box-shadow .18s ease,border-color .18s ease;
+    }
+    .input:focus{border-color:#B0DB9C;box-shadow:0 6px 18px rgba(176,219,156,0.12)}
+
+    .input-icon{
+      position:absolute;
+      right:12px;
+      top:50%;
+      transform:translateY(-50%);
+      color:#9aa6a0;
+      cursor:pointer;
+    }
+
+    .btn-primary{
+      width:100%;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding:12px;
+      border-radius:10px;
+      border:none;
+      cursor:pointer;
+      background:linear-gradient(90deg,#94c781,#6fbf5f);
+      color:#fff;
+      font-weight:600;
+      font-size:15px;
+      box-shadow:0 6px 18px rgba(111,191,95,0.18);
+      transition:transform .16s ease;
+    }
+    .btn-primary:active{transform:translateY(1px)}
+
+    .signup{ text-align:center; margin-top:14px; font-size:14px; color:#556a5f; }
+    .signup a{ color:#2f7f3a; text-decoration:none; font-weight:600 }
+
+    @media (max-width:820px){
+      .split-container{ flex-direction:column; max-width:720px }
+      .left-panel{ height:220px; order:1 }
+      .right-panel{ padding:20px; order:2 }
+      .signup-card{ padding:24px }
+    }
+
+    @media (max-width:420px){
+      body{ padding:12px }
+      .signup-card{ padding:18px }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="split-container">
+    <!-- LEFT IMAGE PANEL -->
+    <div class="left-panel">
+      <img src="img\loginlamge.png" alt="Sign Up illustration" onerror="this.style.display='none'">
+      <div class="left-pattern" aria-hidden="true"></div>
+    </div>
+
+    <!-- RIGHT SIGN-UP CARD -->
+    <div class="right-panel">
+      <div class="signup-card">
+        <div class="logo">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g2" x1="0" x2="1">
+                <stop offset="0" stop-color="#B0DB9C"/>
+                <stop offset="1" stop-color="#6FBF5F"/>
+              </linearGradient>
+            </defs>
+            <rect x="6" y="10" width="52" height="44" rx="8" fill="url(#g2)"/>
+            <path d="M18 20h28M18 32h28M18 44h28" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
+          </svg>
+          <span>LogicLoom</span>
+        </div>
+
+        <h2>Create Your Account</h2>
+
+        <form id="signupForm" novalidate>
+          <div class="input-group">
+            <input class="input" id="username" type="text" placeholder="Username" required>
+          </div>
+
+          <div class="input-group">
+            <input class="input" id="email" type="email" placeholder="Email address" required>
+          </div>
+
+          <div class="input-group">
+            <input class="input" id="password" type="password" placeholder="Password" required>
+            <span class="input-icon" onclick="togglePassword()">
+              <i id="eyeIcon" class="fa-solid fa-eye"></i>
+            </span>
+          </div>
+
+          <div class="input-group">
+            <input class="input" id="mobile" type="text" maxlength="10" placeholder="Mobile number" required>
+          </div>
+
+          <button class="btn-primary" type="submit">Sign Up</button>
+
+          <div class="signup">Already have an account? <a href="login.html">Sign In</a></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function togglePassword(){
+      const pw=document.getElementById('password');
+      const eye=document.getElementById('eyeIcon');
+      if(pw.type==='password'){pw.type='text';eye.classList.replace('fa-eye','fa-eye-slash');}
+      else{pw.type='password';eye.classList.replace('fa-eye-slash','fa-eye');}
+    }
+
+    document.getElementById('signupForm').addEventListener('submit',function(e){
+      e.preventDefault();
+      const mobile=document.getElementById('mobile').value;
+      if(!/^[0-9]{10}$/.test(mobile)){
+        alert("Please enter a valid 10-digit mobile number.");
+        return;
+      }
+      alert('Signup successful! Redirecting to login...');
+      window.location.href='login.html';
+    });
+  </script>
+
+</body>
+</html>
