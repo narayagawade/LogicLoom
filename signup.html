@@ -397,45 +397,6 @@
       box-shadow: 0 8px 25px rgba(176, 219, 156, 0.4);
     }
 
-    .btn-google {
-      background: white;
-      color: #4a5568;
-      border: 2px solid #e2e8f0;
-      margin-top: 15px;
-    }
-
-    .btn-google:hover {
-      border-color: #B0DB9C;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .divider {
-      text-align: center;
-      margin: 25px 0;
-      position: relative;
-      color: #a0aec0;
-      font-size: 14px;
-    }
-
-    .divider::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: #e2e8f0;
-      z-index: 1;
-    }
-
-    .divider span {
-      background: white;
-      padding: 0 15px;
-      position: relative;
-      z-index: 2;
-    }
-
     .login-link {
       text-align: center;
       margin-top: 25px;
@@ -703,71 +664,47 @@
       </div>
 
       <div class="form-container">
-        <form id="signupForm">
+        <form id="signupForm" action="signup.php" method="POST">
           <div class="form-group">
-            <label class="form-label" for="username">Username</label>
+            <label class="form-label" for="fullname">Full Name</label>
             <div class="input-wrapper">
-              <input type="text" id="username" class="form-input" placeholder="Choose a username" required>
+              <input type="text" id="fullname" name="fullname" class="form-input" placeholder="Enter your full name" required>
               <i class="fas fa-user input-icon"></i>
             </div>
           </div>
-
           <div class="form-group">
             <label class="form-label" for="email">Email Address</label>
             <div class="input-wrapper">
-              <input type="email" id="email" class="form-input" placeholder="Enter your email" required>
+              <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email" required>
               <i class="fas fa-envelope input-icon"></i>
             </div>
           </div>
-
           <div class="form-group">
-            <label class="form-label" for="password">Password</label>
+            <label class="form-label" for="phone">Phone Number</label>
             <div class="input-wrapper">
-              <input type="password" id="password" class="form-input" placeholder="Create a strong password" required>
-              <i class="fas fa-eye input-icon" id="togglePassword"></i>
-            </div>
-            <div class="password-strength" id="passwordStrength">
-              <div class="password-strength-bar"></div>
-            </div>
-            <div class="password-strength-text" id="passwordStrengthText">Password strength</div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="mobile">Mobile Number</label>
-            <div class="input-wrapper">
-              <input type="tel" id="mobile" class="form-input" placeholder="Enter your 10-digit mobile number" maxlength="10" required>
+              <input type="tel" id="phone" name="phone" class="form-input" placeholder="Enter your phone number" required pattern="\d{10}" title="Phone number must be exactly 10 digits.">
               <i class="fas fa-phone input-icon"></i>
             </div>
           </div>
-
+          <div class="form-group">
+            <label class="form-label" for="password">Password</label>
+            <div class="input-wrapper">
+              <input type="password" id="password" name="password" class="form-input" placeholder="Create a strong password" required>
+              <i class="fas fa-eye input-icon" id="togglePassword"></i>
+            </div>
+          </div>
           <div class="terms">
             <input type="checkbox" id="agreeTerms" required>
             <label for="agreeTerms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
           </div>
-
           <button type="submit" class="btn btn-primary" id="signupBtn">
-            <span>Create Account</span>
+            <span>Signup</span>
             <div class="loading" id="signupLoading"></div>
           </button>
-
-          <div class="divider">
-            <span>Or sign up with</span>
-          </div>
-
-          <button type="button" class="btn btn-google" id="googleSignUp">
-            <svg width="18" height="18" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-              <path fill="#EA4335" d="M24 9.5c3.9 0 6.7 1.6 8.2 2.9l6-5.7C34.9 3.4 30.9 1.5 24 1.5 14.9 1.5 7.7 7 4.4 14.8l7.4 5.7C13.9 15.2 18.4 9.5 24 9.5z"/>
-              <path fill="#4285F4" d="M46.5 24.5c0-1.7-.1-3.3-.4-4.8H24v9.1h12.7c-.5 2.9-2.1 5.4-4.4 7.1l7 5.4c4.1-3.7 6.2-9.4 6.2-16.8z"/>
-              <path fill="#FBBC05" d="M11.8 29.9a14.6 14.6 0 0 1 0-11.8l-7.4-5.7A24 24 0 0 0 1.5 24c0 3.8.9 7.4 2.6 10.6l7.7-4.7z"/>
-              <path fill="#34A853" d="M24 46.5c6.1 0 11.2-2 14.9-5.4l-7-5.4c-2 1.4-4.6 2.2-7.9 2.2-5.6 0-10.1-4.6-10.1-10.2 0-1.1.2-2.1.5-3.1l-7.7-5.7C4.3 33.9 11.5 46.5 24 46.5z"/>
-            </svg>
-            <span>Sign up with Google</span>
-          </button>
-
-          <div class="login-link">
-            Already have an account? <a href="login.html">Sign in now</a>
-          </div>
         </form>
+        <div class="login-link">
+          <p>Already have an account? <a href="login.html">Log in here</a></p>
+        </div>
       </div>
     </div>
   </div>
@@ -791,78 +728,9 @@
     const passwordStrengthText = document.getElementById('passwordStrengthText');
     const signupBtn = document.getElementById('signupBtn');
     const signupLoading = document.getElementById('signupLoading');
-    const googleSignUp = document.getElementById('googleSignUp');
     const successMessage = document.getElementById('successMessage');
     const continueBtn = document.getElementById('continueBtn');
     const container = document.querySelector('.container');
-    const mobileInput = document.getElementById('mobile');
-
-    // Form submission with fetch API
-    signupForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      // Get form values
-      const username = document.getElementById('username').value;
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      const mobile = document.getElementById('mobile').value;
-      const agreeTerms = document.getElementById('agreeTerms').checked;
-      
-      // Validate mobile number
-      if (!/^[0-9]{10}$/.test(mobile)) {
-        alert("Please enter a valid 10-digit mobile number.");
-        return;
-      }
-      
-      // Validate terms agreement
-      if (!agreeTerms) {
-        alert("Please agree to the Terms of Service and Privacy Policy.");
-        return;
-      }
-      
-      // Show loading state
-      signupBtn.disabled = true;
-      signupLoading.style.display = 'block';
-      signupBtn.querySelector('span').textContent = 'Creating Account...';
-      
-      // Create form data for submission
-      const formData = new FormData();
-      formData.append('username', username);
-      formData.append('email', email);
-      formData.append('password', password);
-      formData.append('mobile', mobile);
-      formData.append('agreeTerms', agreeTerms);
-      
-      // Submit to PHP backend
-      fetch('signup.php', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          // Show success message
-          container.style.display = 'none';
-          successMessage.style.display = 'block';
-        } else {
-          alert(data.message);
-        }
-        
-        // Reset button state
-        signupBtn.disabled = false;
-        signupLoading.style.display = 'none';
-        signupBtn.querySelector('span').textContent = 'Create Account';
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred. Please try again.');
-        
-        // Reset button state
-        signupBtn.disabled = false;
-        signupLoading.style.display = 'none';
-        signupBtn.querySelector('span').textContent = 'Create Account';
-      });
-    });
 
     // Toggle password visibility
     togglePassword.addEventListener('click', function() {
@@ -902,28 +770,37 @@
       passwordStrengthText.textContent = text;
     });
 
-    // Mobile number validation (only numbers)
-    mobileInput.addEventListener('input', function() {
-      this.value = this.value.replace(/[^0-9]/g, '');
-    });
-
-    // Google Sign Up
-    googleSignUp.addEventListener('click', function() {
-      // Show loading state
-      this.disabled = true;
-      const originalText = this.querySelector('span').textContent;
-      this.querySelector('span').textContent = 'Connecting...';
+    // Form submission
+    signupForm.addEventListener('submit', function(e) {
+      e.preventDefault();
       
-      // Simulate Google sign up
+      // Get form values
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const agreeTerms = document.getElementById('agreeTerms').checked;
+      
+      // Validate terms agreement
+      if (!agreeTerms) {
+        alert("Please agree to the Terms of Service and Privacy Policy.");
+        return;
+      }
+      
+      // Show loading state
+      signupBtn.disabled = true;
+      signupLoading.style.display = 'block';
+      signupBtn.querySelector('span').textContent = 'Creating Account...';
+      
+      // Simulate API call
       setTimeout(() => {
         // Show success message
         container.style.display = 'none';
         successMessage.style.display = 'block';
         
-        // Reset button state
-        this.disabled = false;
-        this.querySelector('span').textContent = originalText;
-      }, 1500);
+        // Reset button state (in case of error handling)
+        signupBtn.disabled = false;
+        signupLoading.style.display = 'none';
+        signupBtn.querySelector('span').textContent = 'Create Account';
+      }, 2000);
     });
 
     // Continue to dashboard
@@ -967,3 +844,4 @@
   </script>
 </body>
 </html>
+`
