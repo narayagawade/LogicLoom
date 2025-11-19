@@ -2,6 +2,12 @@
 session_start();
 include 'db.php';
 
+// If already logged in → redirect to dashboard
+if (isset($_SESSION['user_id'])) {
+    header("Location: dashboard.php");
+    exit;
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $email = $_POST['email'];

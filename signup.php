@@ -1,5 +1,12 @@
 <?php
 include 'db.php';
+session_start();
+
+// If user already logged in → redirect to dashboard
+if (isset($_SESSION['user_id'])) {
+    header("Location: dashboard.php");
+    exit();
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -16,11 +23,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    $query = "INSERT INTO users (full_name, email, phone, password) 
-              VALUES ('$full_name', '$email', '$phone', '$password')";
+    $query = "INSERT INTO users (full_name, email, phone, password, role) 
+              VALUES ('$full_name', '$email', '$phone', '$password', 'user')";
     
     if (mysqli_query($conn, $query)) {
-        echo "Signup Successful!";
+        header("Location: login.html");
+        exit;
     } else {
         echo "Error: " . mysqli_error($conn);
     }
