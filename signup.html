@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LogicLoom - Signup</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+    body {
+      display: flex; justify-content: center; align-items: center;
+      height: 100vh; background: linear-gradient(135deg, #c9e9c1, #b8e0a6);
+      overflow: hidden; position: relative;
+    }
+
+    /* Background floating circles */
+    .circle {
+      position: absolute; border-radius: 50%;
+      background: rgba(13, 93, 104, 0.07);
+      animation: float 20s ease-in-out infinite;
+    }
+    .circle:nth-child(1){ width:220px;height:220px;top:5%;left:5%;animation-delay:0s; }
+    .circle:nth-child(2){ width:180px;height:180px;top:60%;left:8%;animation-delay:4s; }
+    .circle:nth-child(3){ width:150px;height:150px;bottom:10%;right:5%;animation-delay:8s; }
+    .circle:nth-child(4){ width:200px;height:200px;top:20%;right:10%;animation-delay:2s; }
+    .circle:nth-child(5){ width:130px;height:130px;bottom:5%;left:40%;animation-delay:6s; }
+    .circle:nth-child(6){ width:180px;height:180px;top:8%;right:40%;animation-delay:6s; }
+
+    @keyframes float {
+      0%,100% { transform: translateY(0) scale(1); opacity: 0.6; }
+      50% { transform: translateY(-25px) scale(1.05); opacity: 0.4; }
+    }
+
+    /* Main container */
+    .container {
+      display: flex; background: #fff; width: 900px; border-radius: 16px;
+      overflow: hidden; box-shadow: 0 8px 30px rgba(70,16,54,0.1);
+      z-index: 2; transition: 0.5s;
+    }
+
+    /* LEFT PANEL (same as login) */
+    .left {
+      flex: 1; background-color: #a9d99e; padding: 60px; color: #1e1e1e;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .left h1 { font-size: 28px; margin-bottom: 15px; font-weight: 700; }
+    .features { margin-top: 25px; }
+    .feature { display: flex; align-items: center; margin-bottom: 18px; }
+    .feature i { background:#c9e9c1;padding:10px;border-radius:10px;margin-right:12px; }
+    .feature span { font-weight: 500; }
+
+    /* RIGHT PANEL */
+    .right { flex: 1.2; padding: 60px; background: #fff; position: relative; }
+
+    h2 { font-size: 24px; font-weight: 700; margin-bottom: 10px; }
+    .right p { color: #6b6b6b; margin-bottom: 20px; }
+
+    .input-group { margin-bottom: 18px; position: relative; }
+    .input-group input {
+      width: 100%; padding: 12px 45px 12px 15px;
+      border: 1px solid #d9d9d9; border-radius: 10px; font-size: 14px;
+    }
+    .input-group i {
+      position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+      color: #777; cursor: pointer;
+    }
+
+    button {
+      width: 100%; padding: 12px; background: #9cd48b; border: none;
+      color: #fff; border-radius: 10px; font-size: 16px; font-weight: 600;
+      cursor: pointer; transition: 0.3s;
+    }
+    button:hover { background: #8cc07e; }
+
+    .toggle-link { margin-top: 18px; text-align: center; }
+    .toggle-link a { color: #7cc56e; font-weight: 600; text-decoration: none; }
+
+    /* Flip animation */
+    .right { transform-style: preserve-3d; transition: transform 0.6s ease, opacity 0.6s ease; }
+    .flip-out { transform: rotateY(90deg); opacity: 0; }
+  </style>
+</head>
+
+<body>
+
+  <!-- Floating circles -->
+  <div class="circle"></div><div class="circle"></div><div class="circle"></div>
+  <div class="circle"></div><div class="circle"></div><div class="circle"></div>
+
+  <div class="container">
+
+    <!-- LEFT SIDE SAME AS LOGIN -->
+    <div class="left">
+      <h1><i class="fa-solid fa-code-branch"></i> LogicLoom</h1>
+      <p>Master coding with logic practice, AI tests & analytics.</p>
+
+      <div class="features">
+        <div class="feature"><i class="fa-solid fa-puzzle-piece"></i><span>Pattern Solving</span></div>
+        <div class="feature"><i class="fa-solid fa-brain"></i><span>MCQ Logic Tests</span></div>
+        <div class="feature"><i class="fa-solid fa-robot"></i><span>AI Interviews</span></div>
+        <div class="feature"><i class="fa-solid fa-chart-line"></i><span>Progress Analytics</span></div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE (SIGNUP FORM) -->
+    <div class="right" id="signupBox">
+
+      <h2>Create an Account</h2>
+      <p>Join LogicLoom and start coding smarter.</p>
+
+      <form action="signup.php" method="POST" autocomplete="off">
+
+        <div class="input-group">
+          <input type="text" name="full_name" placeholder="Full Name" required>
+          <i class="fa-solid fa-user"></i>
+        </div>
+
+        <div class="input-group">
+          <input type="email" name="email" placeholder="Email" required>
+          <i class="fa-solid fa-envelope"></i>
+        </div>
+
+        <div class="input-group">
+          <input type="tel" id="phone" name="phone" placeholder="Phone Number" maxlength="10" minlength="10" required>
+          <i class="fa-solid fa-phone"></i>
+        </div>
+
+        <div class="input-group">
+          <input type="password" id="password" name="password" placeholder="Password" required>
+          <i class="fa-solid fa-eye" id="togglePassword"></i>
+        </div>
+
+        <button type="submit">Signup</button>
+
+        <div class="toggle-link">
+          Already have an account?
+          <a href="#" id="goLogin">Login</a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Flip + Redirect to login.html
+    const goLogin = document.getElementById("goLogin");
+    const signupBox = document.getElementById("signupBox");
+
+    goLogin.addEventListener("click", function(e) {
+      e.preventDefault();
+      signupBox.classList.add("flip-out");
+
+      setTimeout(() => {
+        window.location.href = "login.html";
+      }, 500);
+    });
+
+    // Password show/hide
+    document.getElementById("togglePassword").addEventListener("click", function() {
+      const password = document.getElementById("password");
+      const type = password.type === "password" ? "text" : "password";
+      password.type = type;
+
+      this.classList.toggle("fa-eye");
+      this.classList.toggle("fa-eye-slash");
+    });
+
+    // Phone validation (only 10 digits)
+    const phoneInput = document.getElementById("phone");
+    phoneInput.addEventListener("input", function () {
+      this.value = this.value.replace(/[^\d]/g, "").slice(0, 10);
+    });
+  </script>
+
+</body>
+</html>

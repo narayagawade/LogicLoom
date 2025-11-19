@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LogicLoom - Login & Signup</title>
+  <title>LogicLoom - Login</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -29,62 +29,31 @@
     .circle {
       position: absolute;
       border-radius: 50%;
-      background: rgba(0, 0, 0, 0.07);
-      filter: blur(40px);
+      background: rgba(13, 93, 104, 0.07);
       animation: float 20s ease-in-out infinite;
     }
 
-    .circle:nth-child(1) {
-      width: 220px;
-      height: 220px;
-      top: 5%;
-      left: 5%;
-      animation-delay: 0s;
-    }
-    .circle:nth-child(2) {
-      width: 180px;
-      height: 180px;
-      top: 60%;
-      left: 8%;
-      animation-delay: 4s;
-    }
-    .circle:nth-child(3) {
-      width: 150px;
-      height: 150px;
-      bottom: 10%;
-      right: 5%;
-      animation-delay: 8s;
-    }
-    .circle:nth-child(4) {
-      width: 200px;
-      height: 200px;
-      top: 20%;
-      right: 10%;
-      animation-delay: 2s;
-    }
-    .circle:nth-child(5) {
-      width: 130px;
-      height: 130px;
-      bottom: 5%;
-      left: 40%;
-      animation-delay: 6s;
-    }
+    .circle:nth-child(1) { width: 220px; height: 220px; top: 5%; left: 5%; animation-delay: 0s; }
+    .circle:nth-child(2) { width: 180px; height: 180px; top: 60%; left: 8%; animation-delay: 4s; }
+    .circle:nth-child(3) { width: 150px; height: 150px; bottom: 10%; right: 5%; animation-delay: 8s; }
+    .circle:nth-child(4) { width: 200px; height: 200px; top: 20%; right: 10%; animation-delay: 2s; }
+    .circle:nth-child(5) { width: 130px; height: 130px; bottom: 5%; left: 40%; animation-delay: 6s; }
+    .circle:nth-child(6) { width: 180px; height: 130px; top: 8%; right: 40%; animation-delay: 6s; }
 
     @keyframes float {
       0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
       50% { transform: translateY(-25px) scale(1.05); opacity: 0.4; }
     }
 
-    /* Container */
+    /* Main Container */
     .container {
       display: flex;
       background: #fff;
       width: 900px;
       border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 8px 30px rgba(70, 16, 54, 0.1);
       z-index: 2;
-      transition: all 0.5s ease;
     }
 
     .left {
@@ -95,7 +64,6 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      position: relative;
     }
 
     .left h1 {
@@ -128,13 +96,10 @@
       font-weight: 500;
     }
 
-    /* Right Panel (Forms) */
     .right {
       flex: 1.2;
       padding: 60px;
-      position: relative;
       background-color: #fff;
-      transition: all 0.5s ease;
     }
 
     h2 {
@@ -160,7 +125,6 @@
       border: 1px solid #d9d9d9;
       border-radius: 10px;
       font-size: 14px;
-      outline: none;
     }
 
     .input-group i {
@@ -169,18 +133,7 @@
       top: 50%;
       transform: translateY(-50%);
       color: #999;
-    }
-
-    .checkbox {
-      margin-bottom: 25px;
-      font-size: 14px;
-      color: #666;
-    }
-
-    .checkbox a {
-      color: #7cc56e;
-      text-decoration: none;
-      font-weight: 500;
+      cursor: pointer;
     }
 
     button {
@@ -212,21 +165,13 @@
       font-weight: 600;
       text-decoration: none;
     }
-
-    /* Hidden form */
-    .form {
-      transition: all 0.5s ease;
-    }
-
-    .hidden {
-      display: none;
-      opacity: 0;
-    }
-
   </style>
 </head>
+
 <body>
+
   <!-- Background circles -->
+  <div class="circle"></div>
   <div class="circle"></div>
   <div class="circle"></div>
   <div class="circle"></div>
@@ -234,10 +179,12 @@
   <div class="circle"></div>
 
   <div class="container">
+
     <!-- Left Section -->
     <div class="left">
       <h1><i class="fa-solid fa-code-branch"></i> LogicLoom</h1>
       <p>Join thousands of developers mastering coding through intelligent practice.</p>
+
       <div class="features">
         <div class="feature"><i class="fa-solid fa-puzzle-piece"></i><span>Pattern Solving Challenges</span></div>
         <div class="feature"><i class="fa-solid fa-brain"></i><span>MCQ Questions & Logic Tests</span></div>
@@ -246,79 +193,45 @@
       </div>
     </div>
 
-    <!-- Right Section -->
+    <!-- Right Section (LOGIN ONLY) -->
     <div class="right">
-      <!-- Login Form -->
-      <div class="form" id="loginForm">
+      <form action="login.php" method="POST" id="loginFormReal">
         <h2>Login</h2>
         <p>Start your coding journey with LogicLoom</p>
-        <div class="input-group">
-          <input type="email" placeholder="Enter your email">
-          <i class="fa-solid fa-envelope"></i>
-        </div>
-        <div class="input-group">
-          <input type="password" placeholder="Enter your password">
-          <i class="fa-solid fa-eye"></i>
-        </div>
-        <button>Login</button>
-        <div class="toggle-link">
-          Don't have an account? <a href="#" id="showSignup">Sign up now</a>
-        </div>
-      </div>
 
-      <!-- Signup Form -->
-      <div class="form hidden" id="signupForm">
-        <h2>Create Account</h2>
-        <p>Start your coding journey with LogicLoom</p>
         <div class="input-group">
-          <input type="text" placeholder="Enter your full name">
-          <i class="fa-solid fa-user"></i>
-        </div>
-        <div class="input-group">
-          <input type="email" placeholder="Enter your email">
+          <input type="email" name="email" placeholder="Enter your email" required>
           <i class="fa-solid fa-envelope"></i>
         </div>
+
         <div class="input-group">
-          <input type="text" placeholder="Enter your phone number">
-          <i class="fa-solid fa-phone"></i>
+          <input type="password" name="password" placeholder="Enter your password" id="loginPassword" required>
+          <i class="fa-solid fa-eye" id="toggleLoginPassword"></i>
         </div>
-        <div class="input-group">
-          <input type="password" placeholder="Create a strong password">
-          <i class="fa-solid fa-eye"></i>
-        </div>
-        <div class="checkbox">
-          <input type="checkbox" id="terms">
-          <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
-        </div>
-        <button>Signup</button>
+
+        <button type="submit">Login</button>
+
         <div class="toggle-link">
-          Already have an account? <a href="#" id="showLogin">Log in here</a>
+          Don't have an account? <a href="signup.html">Sign up now</a>
         </div>
-      </div>
+      </form>
     </div>
+
   </div>
 
   <script>
-    const loginForm = document.getElementById('loginForm');
-    const signupForm = document.getElementById('signupForm');
-    const showSignup = document.getElementById('showSignup');
-    const showLogin = document.getElementById('showLogin');
+    // Password show/hide for login
+    const toggleLoginPassword = document.getElementById("toggleLoginPassword");
+    const loginPassword = document.getElementById("loginPassword");
 
-    showSignup.addEventListener('click', (e) => {
-      e.preventDefault();
-      loginForm.classList.add('hidden');
-      setTimeout(() => {
-        signupForm.classList.remove('hidden');
-      }, 200);
-    });
+    toggleLoginPassword.addEventListener("click", function () {
+      const type = loginPassword.getAttribute("type") === "password" ? "text" : "password";
+      loginPassword.setAttribute("type", type);
 
-    showLogin.addEventListener('click', (e) => {
-      e.preventDefault();
-      signupForm.classList.add('hidden');
-      setTimeout(() => {
-        loginForm.classList.remove('hidden');
-      }, 200);
+      this.classList.toggle("fa-eye");
+      this.classList.toggle("fa-eye-slash");
     });
   </script>
+
 </body>
 </html>
