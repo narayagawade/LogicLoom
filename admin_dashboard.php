@@ -35,6 +35,11 @@ $username = "Admin"; // replace with DB username if needed
       </a>
     </nav>
 
+    <a href="Report_issue.pdf" class="block mt-6 px-4 py-2 rounded-xl hover:bg-white/40 text-gray-700">
+      Report Issue
+</a>
+</nav>
+
     <div class="absolute bottom-6 left-6">
       <a href="logout.php" class="px-4 py-2 bg-[#9cd48b] hover:bg-[#8cc07e] text-white rounded-xl">
         Logout
@@ -65,7 +70,7 @@ $username = "Admin"; // replace with DB username if needed
       <div class="p-6 bg-white/30 backdrop-blur-xl rounded-2xl shadow-lg border border-white/40 hover:scale-[1.02] transition">
         <h3 class="text-lg font-semibold text-gray-800">Add Category</h3>
         <p class="text-gray-600 mt-2">Create a new practice category card for users.</p>
-        <a href="add_card.php" class="mt-4 inline-block px-4 py-2 bg-[#9cd48b] hover:bg-[#8cc07e] text-white rounded-xl">
+        <a href="admin_add_card.php" class="mt-4 inline-block px-4 py-2 bg-[#9cd48b] hover:bg-[#8cc07e] text-white rounded-xl">
           Add Card
         </a>
       </div>
@@ -74,7 +79,7 @@ $username = "Admin"; // replace with DB username if needed
       <div class="p-6 bg-white/30 backdrop-blur-xl rounded-2xl shadow-lg border border-white/40 hover:scale-[1.02] transition">
         <h3 class="text-lg font-semibold text-gray-800">Add Questions</h3>
         <p class="text-gray-600 mt-2">Insert new questions for each category.</p>
-        <a href="manage_questions.php" class="mt-4 inline-block px-4 py-2 bg-[#9cd48b] hover:bg-[#8cc07e] text-white rounded-xl">
+        <a href="add_question.php" class="mt-4 inline-block px-4 py-2 bg-[#9cd48b] hover:bg-[#8cc07e] text-white rounded-xl">
           Add Question
         </a>
       </div>
