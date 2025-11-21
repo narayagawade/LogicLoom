@@ -84,6 +84,15 @@ $username = "Admin"; // replace with DB username if needed
         </a>
       </div>
 
+        <!-- Add Questions -->
+        <div class="p-6 bg-white/30 backdrop-blur-xl rounded-2xl shadow-lg border border-white/40 hover:scale-[1.02] transition">
+        <h3 class="text-lg font-semibold text-gray-800">Pattern solving problem</h3>
+        <p class="text-gray-600 mt-2">Insert new questions for only pattern question.</p>
+        <a href="add_patttern_question.php" class="mt-4 inline-block px-4 py-2 bg-[#9cd48b] hover:bg-[#8cc07e] text-white rounded-xl">
+          Add Question
+        </a>
+      </div>
+
       <!-- AI Auto Question Generator -->
       <div class="p-6 bg-white/30 backdrop-blur-xl rounded-2xl shadow-lg border border-white/40 hover:scale-[1.02] transition">
         <h3 class="text-lg font-semibold text-gray-800">AI Question Generator</h3>
