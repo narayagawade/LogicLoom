@@ -1,121 +1,289 @@
 <?php
 session_start();
-include "db.php";
 
-// Fetch card count
-$cardCountResult = mysqli_query($conn, "SELECT COUNT(*) AS total FROM categories");
-$cardCount = mysqli_fetch_assoc($cardCountResult)['total'];
-
-// Handle form submit
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = $_POST["name"];
-
-    // Auto Avatar — first letter
-    $avatar = strtoupper($name[0]);
-
-    // Insert into DB
-    mysqli_query($conn, "INSERT INTO categories (name, avatar) VALUES ('$name', '$avatar')");
-
-    header("Location: add_card.php?success=1");
+// 1. Security Check (Match Dashboard)
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== "admin") {
+    header("Location: login.php");
     exit;
+}
+
+// 2. Database Include
+// Ensure db.php exists in your directory
+if (file_exists("db.php")) {
+    include "db.php";
+} else {
+    // Fallback for display purposes if db.php is missing during testing
+    $conn = false; 
+}
+
+$username = isset($_SESSION['username']) ? $_SESSION['username'] : "Admin";
+
+// 3. Logic: Fetch card count
+$cardCount = 0;
+if ($conn) {
+    $query = "SELECT COUNT(*) AS total FROM categories";
+    $result = mysqli_query($conn, $query);
+    if ($result) {
+        $row = mysqli_fetch_assoc($result);
+        $cardCount = $row['total'];
+    }
+}
+
+// 4. Logic: Handle form submit
+$success = false;
+if ($_SERVER["REQUEST_METHOD"] == "POST" && $conn) {
+    $name = mysqli_real_escape_string($conn, $_POST["name"]);
+    $avatar = strtoupper(substr($name, 0, 1)); // First letter as avatar
+
+    $insertSql = "INSERT INTO categories (name, avatar) VALUES ('$name', '$avatar')";
+    if (mysqli_query($conn, $insertSql)) {
+        header("Location: add_card.php?success=1");
+        exit;
+    }
+}
+
+if (isset($_GET['success'])) {
+    $success = true;
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light" id="html-root">
 <head>
     <meta charset="UTF-8">
-    <title>Add Card</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Category - LogicLoom</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <style>
-        body {
-            background: linear-gradient(135deg, #c9e9c1, #b8e0a6);
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
         }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(203, 213, 225, 0.8);
+        }
+        .dark .glass-panel {
+            background: rgba(30, 41, 59, 0.8);
+            border-bottom: 1px solid rgba(51, 65, 85, 0.8);
+        }
+        
+        /* Scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Transitions */
+        * { transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; }
     </style>
 </head>
 
-<body class="min-h-screen flex">
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 relative overflow-x-hidden transition-colors duration-300">
 
-    <!-- SIDEBAR -->
-    <aside class="w-64 bg-white/70 backdrop-blur-xl shadow-xl p-6">
-        <h2 class="text-2xl font-bold mb-6 text-gray-800">Admin Panel</h2>
-        <ul class="space-y-4">
+    <!-- Theme Check Script: Prevents flash of wrong theme -->
+    <script>
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.getElementById('html-root').classList.add('dark');
+        } else {
+            document.getElementById('html-root').classList.remove('dark');
+        }
+    </script>
 
-            <li>
-                <a href="admin_dashboard.php" class="block px-4 py-2 rounded-xl bg-green-300/60 hover:bg-green-300/90 transition">
-                    Dashboard
-                </a>
-            </li>
+    <!-- Mobile Overlay -->
+    <div id="mobile-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/20 z-20 hidden lg:hidden backdrop-blur-sm transition-opacity"></div>
 
-            <li>
-                <a href="add_card.php" class="block px-4 py-2 rounded-xl bg-green-500 text-white">
-                    Add Cards
-                </a>
-            </li>
+    <div class="flex h-screen overflow-hidden">
 
-            <li>
-                <a href="reports.php" class="block px-4 py-2 rounded-xl bg-green-300/60 hover:bg-green-300/90 transition">
-                    Reports
-                </a>
-            </li>
-
-            <li>
-                <a href="logout.php" class="block px-4 py-2 rounded-xl bg-red-400 text-white">
-                    Logout
-                </a>
-            </li>
-
-        </ul>
-    </aside>
-
-    <!-- MAIN AREA -->
-    <main class="flex-1 p-10">
-
-        <!-- HEADER -->
-        <div class="flex justify-between items-center mb-10">
-            <h1 class="text-3xl font-bold text-gray-800">Create New Category Card</h1>
-
-            <!-- Card Count -->
-            <div class="px-6 py-3 bg-white/70 backdrop-blur-xl rounded-xl shadow-lg">
-                <p class="text-xl font-semibold text-gray-700">
-                    Total Cards: <span class="text-green-600 font-bold"><?= $cardCount ?></span>
-                </p>
+        <!-- ========= Sidebar ========= -->
+        <aside id="sidebar" class="absolute lg:relative z-30 w-64 h-full bg-emerald-900 dark:bg-slate-950 text-white transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col shadow-2xl border-r border-transparent dark:border-slate-800">
+            <!-- Logo -->
+            <div class="p-6 flex items-center gap-3 border-b border-emerald-800/50 dark:border-slate-800">
+                <div class="w-8 h-8 bg-emerald-400 rounded-lg flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                    <svg class="w-5 h-5 text-emerald-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
+                <h1 class="text-xl font-bold tracking-wide">LogicLoom</h1>
             </div>
-        </div>
 
-        <!-- SUCCESS MESSAGE -->
-        <?php if (isset($_GET['success'])): ?>
-            <div class="p-4 mb-6 bg-green-200 text-green-800 rounded-xl">
-                Card Created Successfully!
+            <!-- Navigation -->
+            <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-1 no-scrollbar">
+                <p class="px-3 text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2">Main</p>
+                
+                <!-- Dashboard Link (Inactive) -->
+                <a href="admin_dashboard.php" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-emerald-100 hover:bg-emerald-800/30 dark:hover:bg-slate-800 hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                    <span>Dashboard</span>
+                </a>
+
+                <!-- Categories Link (Active) -->
+                <a href="add_card.php" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-emerald-800/50 dark:bg-slate-800 text-white shadow-sm border border-emerald-700/50 dark:border-slate-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    <span class="font-medium">Categories</span>
+                </a>
+
+                <!-- Questions Link -->
+                <a href="manage_questions.php" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-emerald-100 hover:bg-emerald-800/30 dark:hover:bg-slate-800 hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span>Questions</span>
+                </a>
+
+                <p class="px-3 text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2 mt-6">Support</p>
+
+                <a href="Report_issue.pdf" target="_blank" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-emerald-100 hover:bg-emerald-800/30 dark:hover:bg-slate-800 hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    <span>Report Issue</span>
+                </a>
+
+                <a href="logout.php" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-emerald-100 hover:bg-red-500/20 hover:text-red-200 transition-colors mt-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    <span>Logout</span>
+                </a>
+            </nav>
+
+            <!-- User Profile -->
+            <div class="p-4 border-t border-emerald-800/50 dark:border-slate-800 bg-emerald-950/30 dark:bg-slate-900/50">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-emerald-700 dark:bg-slate-700 flex items-center justify-center text-white font-bold border-2 border-emerald-600 dark:border-slate-600">
+                        <?php echo strtoupper(substr($username, 0, 1)); ?>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-white truncate"><?php echo htmlspecialchars($username); ?></p>
+                        <p class="text-xs text-emerald-400">Administrator</p>
+                    </div>
+                </div>
             </div>
-        <?php endif; ?>
+        </aside>
 
-        <!-- FORM CARD -->
-        <div class="bg-white/80 backdrop-blur-xl p-8 rounded-2xl shadow-xl w-full max-w-xl">
+        <!-- ========= Main Content ========= -->
+        <main class="flex-1 flex flex-col h-screen overflow-y-auto">
+            
+            <!-- Top Header (With Theme Toggle) -->
+            <header class="glass-panel sticky top-0 z-10 px-6 py-4 flex justify-between items-center shadow-sm transition-colors duration-300">
+                <div class="flex items-center gap-4">
+                    <!-- Mobile Menu -->
+                    <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    </button>
+                    <h2 class="text-xl font-semibold text-slate-800 dark:text-white">Add New Category</h2>
+                </div>
 
-            <form method="POST">
+                <div class="flex items-center gap-6">
+                    <!-- Dark/Light Toggle -->
+                    <button onclick="toggleTheme()" class="p-2 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-yellow-300 hover:bg-slate-300 dark:hover:bg-slate-600 transition-all shadow-inner">
+                        <svg id="sun-icon" class="w-6 h-6 block dark:hidden transition-transform duration-500 rotate-0 dark:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <svg id="moon-icon" class="w-6 h-6 hidden dark:block transition-transform duration-500 -rotate-90 dark:rotate-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </button>
+                    <span class="text-sm text-slate-500 dark:text-slate-400 hidden sm:block"><?php echo date("l, F jS Y"); ?></span>
+                </div>
+            </header>
 
-                <label class="block mb-2 text-gray-800 font-medium">Card Name</label>
-                <input type="text" name="name" required
-                       class="w-full px-4 py-3 mb-4 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-400 outline-none">
+            <!-- Page Content -->
+            <div class="p-6 lg:p-10 max-w-4xl mx-auto w-full">
 
-                <button type="submit"
-                        class="w-full py-3 text-white font-semibold rounded-xl bg-green-500 hover:bg-green-600 transition mb-3">
-                    Add Card
-                </button>
+                <!-- Stats Row -->
+                <div class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-md dark:shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Total Categories</p>
+                            <h3 class="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-1"><?php echo $cardCount; ?></h3>
+                        </div>
+                        <div class="p-4 bg-emerald-50 dark:bg-emerald-900/30 rounded-full text-emerald-600 dark:text-emerald-400">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-purple-600 to-indigo-600 p-6 rounded-2xl shadow-lg text-white flex flex-col justify-between relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10"></div>
+                        <div class="relative z-10">
+                            <h3 class="text-lg font-bold">Need Help?</h3>
+                            <p class="text-purple-100 text-sm mt-1">Let AI suggest categories for you.</p>
+                        </div>
+                        <button class="mt-4 bg-white text-purple-600 py-2 px-4 rounded-lg font-semibold text-sm hover:bg-purple-50 transition shadow-sm w-fit">
+                            Try AI Generator
+                        </button>
+                    </div>
+                </div>
 
-            </form>
+                <!-- Main Form Card -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg dark:shadow-sm border border-slate-200 dark:border-slate-700 p-8">
+                    
+                    <!-- Success Message -->
+                    <?php if ($success): ?>
+                        <div class="mb-6 p-4 bg-emerald-100 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 rounded-xl flex items-center gap-3">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span>Category card created successfully!</span>
+                        </div>
+                    <?php endif; ?>
 
-            <!-- AI BUTTON -->
-            <button
-                class="w-full py-3 text-white font-semibold rounded-xl bg-blue-500 hover:bg-blue-600 transition">
-                Generate Card with AI
-            </button>
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="p-3 bg-slate-100 dark:bg-slate-700 rounded-xl">
+                            <svg class="w-6 h-6 text-slate-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        </div>
+                        <h2 class="text-xl font-bold text-slate-800 dark:text-white">Create New Card</h2>
+                    </div>
 
-        </div>
+                    <form method="POST">
+                        <div class="mb-6">
+                            <label class="block mb-2 text-sm font-medium text-slate-600 dark:text-slate-400">Category Name</label>
+                            <input type="text" name="name" required placeholder="e.g. Mathematics, Science, Logic..."
+                                   class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-transparent outline-none transition-all shadow-sm">
+                        </div>
 
-    </main>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <button type="submit" class="flex-1 py-3 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-600/20 transition-transform hover:-translate-y-0.5">
+                                Create Card
+                            </button>
+                            
+                            <!-- Optional secondary action -->
+                            <button type="button" onclick="window.location.href='admin_dashboard.php'" class="flex-1 py-3 px-6 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium rounded-xl transition-colors">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
 
+            </div>
+        </main>
+    </div>
+
+    <!-- Shared Scripts for Sidebar & Theme -->
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('mobile-backdrop');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                backdrop.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.add('hidden');
+            }
+        }
+
+        const htmlRoot = document.getElementById('html-root');
+        function toggleTheme() {
+            if (htmlRoot.classList.contains('dark')) {
+                htmlRoot.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                htmlRoot.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+        }
+    </script>
 </body>
 </html>
