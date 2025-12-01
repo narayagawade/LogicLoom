@@ -4,7 +4,7 @@ include 'db.php';
 
 // If already logged in → redirect to dashboard
 if (isset($_SESSION['user_id'])) {
-    header("Location: dashboard.php");
+    header("Location: user_dashboard.php");
     exit;
 }
 
@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($user['role'] == 'admin') {
                 header("Location: admin_dashboard.php");
             } else {
-                header("Location: dashboard.php");
+                header("Location: user_dashboard.php");
             }
             exit;
 
