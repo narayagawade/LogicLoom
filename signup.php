@@ -5,7 +5,14 @@ session_start();
 // If user already logged in → redirect to dashboard
 if (isset($_SESSION['user_id'])) {
     header("Location: dashboard.php");
-    exit();
+    exit();// Auto-login after signup
+    session_start();
+    $_SESSION['user_id'] = mysqli_insert_id($conn);
+    
+    // After signup → go to profile setup
+    header("Location: profile_setup.php");
+    exit;
+    
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
