@@ -152,7 +152,7 @@ if ($hour >= 5 && $hour < 12) {
                       </div>
 
                       <div class="p-2">
-                          <a href="profile_update.php" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors">
+                          <a href="profile.php" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors">
                               <i class="ph ph-user-circle text-lg"></i> My Profile
                           </a>
                           <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors">
