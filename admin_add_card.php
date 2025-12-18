@@ -8,11 +8,9 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== "admin") {
 }
 
 // 2. Database Include
-// Ensure db.php exists in your directory
 if (file_exists("db.php")) {
     include "db.php";
 } else {
-    // Fallback for display purposes if db.php is missing during testing
     $conn = false; 
 }
 
@@ -29,21 +27,36 @@ if ($conn) {
     }
 }
 
-// 4. Logic: Handle form submit
-$success = false;
+// 4. Logic: Handle form submit - MODIFIED TO SHOW MESSAGE ON SAME PAGE
+$success_message = '';
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $conn) {
-    $name = mysqli_real_escape_string($conn, $_POST["name"]);
-    $avatar = strtoupper(substr($name, 0, 1)); // First letter as avatar
+    $name = trim($_POST["name"]);
 
-    $insertSql = "INSERT INTO categories (name, avatar) VALUES ('$name', '$avatar')";
-    if (mysqli_query($conn, $insertSql)) {
-        header("Location: add_card.php?success=1");
-        exit;
+    if (!empty($name)) {
+        $name = mysqli_real_escape_string($conn, $name);
+        $avatar = strtoupper(substr($name, 0, 1)); // First letter as avatar
+
+        $insertSql = "INSERT INTO categories (name, avatar) VALUES ('$name', '$avatar')";
+        
+        if (mysqli_query($conn, $insertSql)) {
+            $success_message = "Category card created successfully!";
+            
+            // Update card count after insert
+            $result = mysqli_query($conn, "SELECT COUNT(*) AS total FROM categories");
+            if ($result) {
+                $row = mysqli_fetch_assoc($result);
+                $cardCount = $row['total'];
+            }
+            
+            // Clear the form field
+            $_POST['name'] = '';
+        } else {
+            $success_message = "Error: Could not create category.";
+        }
+    } else {
+        $success_message = "Please enter a category name.";
     }
-}
-
-if (isset($_GET['success'])) {
-    $success = true;
 }
 ?>
 
@@ -95,7 +108,7 @@ if (isset($_GET['success'])) {
 
 <body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 relative overflow-x-hidden transition-colors duration-300">
 
-    <!-- Theme Check Script: Prevents flash of wrong theme -->
+    <!-- Theme Check Script -->
     <script>
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.getElementById('html-root').classList.add('dark');
@@ -123,19 +136,16 @@ if (isset($_GET['success'])) {
             <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-1 no-scrollbar">
                 <p class="px-3 text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2">Main</p>
                 
-                <!-- Dashboard Link (Inactive) -->
                 <a href="admin_dashboard.php" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-emerald-100 hover:bg-emerald-800/30 dark:hover:bg-slate-800 hover:text-white transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                     <span>Dashboard</span>
                 </a>
 
-                <!-- Categories Link (Active) -->
                 <a href="add_card.php" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-emerald-800/50 dark:bg-slate-800 text-white shadow-sm border border-emerald-700/50 dark:border-slate-700">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                     <span class="font-medium">Categories</span>
                 </a>
 
-                <!-- Questions Link -->
                 <a href="manage_questions.php" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-emerald-100 hover:bg-emerald-800/30 dark:hover:bg-slate-800 hover:text-white transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     <span>Questions</span>
@@ -171,10 +181,9 @@ if (isset($_GET['success'])) {
         <!-- ========= Main Content ========= -->
         <main class="flex-1 flex flex-col h-screen overflow-y-auto">
             
-            <!-- Top Header (With Theme Toggle) -->
+            <!-- Top Header -->
             <header class="glass-panel sticky top-0 z-10 px-6 py-4 flex justify-between items-center shadow-sm transition-colors duration-300">
                 <div class="flex items-center gap-4">
-                    <!-- Mobile Menu -->
                     <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                     </button>
@@ -182,7 +191,6 @@ if (isset($_GET['success'])) {
                 </div>
 
                 <div class="flex items-center gap-6">
-                    <!-- Dark/Light Toggle -->
                     <button onclick="toggleTheme()" class="p-2 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-yellow-300 hover:bg-slate-300 dark:hover:bg-slate-600 transition-all shadow-inner">
                         <svg id="sun-icon" class="w-6 h-6 block dark:hidden transition-transform duration-500 rotate-0 dark:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                         <svg id="moon-icon" class="w-6 h-6 hidden dark:block transition-transform duration-500 -rotate-90 dark:rotate-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
@@ -221,11 +229,11 @@ if (isset($_GET['success'])) {
                 <!-- Main Form Card -->
                 <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg dark:shadow-sm border border-slate-200 dark:border-slate-700 p-8">
                     
-                    <!-- Success Message -->
-                    <?php if ($success): ?>
-                        <div class="mb-6 p-4 bg-emerald-100 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 rounded-xl flex items-center gap-3">
+                    <!-- Success Message - Now shown on same page -->
+                    <?php if (!empty($success_message)): ?>
+                        <div class="mb-6 p-4 <?php echo strpos($success_message, 'successfully') !== false ? 'bg-emerald-100 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200' : 'bg-red-100 dark:bg-red-900/30 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200'; ?> border rounded-xl flex items-center gap-3">
                             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <span>Category card created successfully!</span>
+                            <span><?php echo $success_message; ?></span>
                         </div>
                     <?php endif; ?>
 
@@ -240,6 +248,7 @@ if (isset($_GET['success'])) {
                         <div class="mb-6">
                             <label class="block mb-2 text-sm font-medium text-slate-600 dark:text-slate-400">Category Name</label>
                             <input type="text" name="name" required placeholder="e.g. Mathematics, Science, Logic..."
+                                   value="<?php echo isset($_POST['name']) ? htmlspecialchars($_POST['name']) : ''; ?>"
                                    class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-transparent outline-none transition-all shadow-sm">
                         </div>
 
@@ -248,7 +257,6 @@ if (isset($_GET['success'])) {
                                 Create Card
                             </button>
                             
-                            <!-- Optional secondary action -->
                             <button type="button" onclick="window.location.href='admin_dashboard.php'" class="flex-1 py-3 px-6 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium rounded-xl transition-colors">
                                 Cancel
                             </button>
@@ -260,7 +268,7 @@ if (isset($_GET['success'])) {
         </main>
     </div>
 
-    <!-- Shared Scripts for Sidebar & Theme -->
+    <!-- Shared Scripts -->
     <script>
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
