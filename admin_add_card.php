@@ -32,15 +32,16 @@ $success_message = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $conn) {
     $name = trim($_POST["name"]);
+    $type = $_POST["type"] ?? 'mcq'; // default to mcq
 
     if (!empty($name)) {
         $name = mysqli_real_escape_string($conn, $name);
-        $avatar = strtoupper(substr($name, 0, 1)); // First letter as avatar
+        $avatar = strtoupper(substr($name, 0, 1));
 
-        $insertSql = "INSERT INTO categories (name, avatar) VALUES ('$name', '$avatar')";
+        $insertSql = "INSERT INTO categories (name, avatar, type) VALUES ('$name', '$avatar', '$type')";
         
         if (mysqli_query($conn, $insertSql)) {
-            $success_message = "Category card created successfully!";
+            $success_message = "Category added successfully!";
             
             // Update card count after insert
             $result = mysqli_query($conn, "SELECT COUNT(*) AS total FROM categories");
@@ -251,6 +252,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $conn) {
                                    value="<?php echo isset($_POST['name']) ? htmlspecialchars($_POST['name']) : ''; ?>"
                                    class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-transparent outline-none transition-all shadow-sm">
                         </div>
+                       
+<!-- NEW: Category Type Selection -->
+<div class="mb-6">
+    <label class="block mb-2 text-sm font-medium text-slate-600 dark:text-slate-400">Category Type</label>
+    <div class="grid grid-cols-2 gap-4">
+        <label class="flex items-center p-4 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl cursor-pointer hover:border-emerald-500 transition">
+            <input type="radio" name="type" value="mcq" checked class="mr-3 text-emerald-600 focus:ring-emerald-500">
+            <span class="font-medium">📝 MCQ Practice</span>
+            <p class="text-xs text-slate-500 mt-1">Multiple choice questions</p>
+        </label>
+        <label class="flex items-center p-4 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl cursor-pointer hover:border-purple-500 transition">
+            <input type="radio" name="type" value="coding" class="mr-3 text-purple-600 focus:ring-purple-500">
+            <span class="font-medium">💻 Pattern Coding</span>
+            <p class="text-xs text-slate-500 mt-1">Write code to print patterns</p>
+        </label>
+    </div>
+</div>
 
                         <div class="flex flex-col sm:flex-row gap-4">
                             <button type="submit" class="flex-1 py-3 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-600/20 transition-transform hover:-translate-y-0.5">
