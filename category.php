@@ -92,19 +92,24 @@ if (!$cat) {
 
             <!-- Start Practice -->
 
-            <a href="start_test.php?cat=<?php echo $cat_id; ?>"
+          <!-- Always show MCQ Practice -->
+    <a href="start_test.php?cat=<?php echo $cat_id; ?>"
+       class="px-6 py-4 bg-[#7DBE76] hover:bg-[#6aae65] text-white font-bold rounded-xl text-center shadow-lg transition transform hover:-translate-y-1">
+        📝 Start MCQ Practice (20 Questions)
+    </a>
 
-                class="px-4 py-3 bg-[#5AA053] text-white font-semibold rounded-xl text-center">
+    <!-- Show Pattern Practice ONLY if category type is 'coding' -->
+    <?php if ($cat['type'] == 'coding'): ?>
+    <a href="select_pattern_language.php?cat=<?php echo $cat_id; ?>"
+       class="px-6 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold rounded-xl text-center shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center gap-3">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+        </svg>
+        ⭐ Start Pattern Coding Practice
+    </a>
+    <?php endif; ?>
 
-                📝 Start Practice (20 Questions)
-
-            </a>
-
-
-
-        </div>
-
-    </div>
+</div>
 
 
 
